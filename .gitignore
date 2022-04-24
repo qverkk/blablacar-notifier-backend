@@ -34,3 +34,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### firebase ###
+blablacar-notifier-auth-firebase-adminsdk.json

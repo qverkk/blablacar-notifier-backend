@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.config.firebase.FirebaseAdmin
 import com.example.requests.BlablacarApi
 import com.example.routing.blablacar
 import com.example.routing.tripDetails
@@ -27,6 +28,8 @@ fun main() {
 }
 
 fun Application.mainWithDependencies() {
+    FirebaseAdmin.init()
+
     install(DefaultHeaders)
 
     install(CallLogging) {

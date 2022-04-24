@@ -39,6 +39,7 @@ dependencies {
     implementation("io.ktor:ktor-server-conditional-headers:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.arrow-kt:arrow-core:$arrow_version")
+    implementation("com.google.firebase:firebase-admin:8.1.0")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
