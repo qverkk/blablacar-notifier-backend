@@ -16,10 +16,9 @@ import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
+import org.litote.kmongo.id.serialization.IdKotlinXSerializationModule
 import org.litote.kmongo.serialization.registerSerializer
 import org.slf4j.event.Level
-import java.time.LocalDate
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
@@ -28,8 +27,6 @@ fun main() {
 }
 
 fun Application.mainWithDependencies() {
-    registerSerializer(LocalDateSerializer)
-
     install(DefaultHeaders)
 
     install(CallLogging) {
@@ -41,12 +38,8 @@ fun Application.mainWithDependencies() {
 
     install(ContentNegotiation) {
         json(Json {
-            prettyPrint = true
-            isLenient = true
-
-            serializersModule = SerializersModule {
-                contextual(LocalDate::class, LocalDateSerializer)
-            }
+            serializersModule = IdKotlinXSerializationModule
+            registerSerializer(LocalDateSerializer)
         })
     }
 

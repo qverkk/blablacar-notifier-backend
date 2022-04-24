@@ -1,22 +1,17 @@
 package com.example.serializers
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
+import org.litote.kmongo.serialization.TemporalExtendedJsonSerializer
 
-object LocalDateSerializer : KSerializer<LocalDate> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateSerializer", PrimitiveKind.STRING)
-
-    override fun deserialize(decoder: Decoder): LocalDate {
-        return LocalDate.parse(decoder.decodeString())
+object LocalDateSerializer : TemporalExtendedJsonSerializer<LocalDate>() {
+    override fun epochMillis(temporal: LocalDate): Long {
+        return temporal.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
     }
 
-    override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encodeString(value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+    override fun instantiate(date: Long): LocalDate {
+        return kotlinx.datetime.Instant.fromEpochMilliseconds(date).toLocalDateTime(TimeZone.UTC).date
     }
 }
