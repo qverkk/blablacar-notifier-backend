@@ -32,7 +32,7 @@ class TripRequestsService {
         }
     }
 
-    fun getAllTripRequests(): CoroutineFindPublisher<TripRequest> {
-        return col.find()
+    fun getAllTripRequests(userId: String): CoroutineFindPublisher<TripRequest> {
+        return col.find(TripRequest::userId eq userId)
     }
 }

@@ -5,6 +5,7 @@ import com.example.requests.BlablacarApi
 import com.example.routing.blablacar
 import com.example.routing.tripDetails
 import com.example.serializers.LocalDateSerializer
+import com.example.services.KratosService
 import com.example.services.TripRequestsService
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -14,6 +15,7 @@ import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.conditionalheaders.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.defaultheaders.*
+import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
@@ -29,6 +31,10 @@ fun main() {
 
 fun Application.mainWithDependencies() {
     FirebaseAdmin.init()
+
+    val kratosService = KratosService()
+
+    install(DoubleReceive)
 
     install(DefaultHeaders)
 
@@ -47,7 +53,7 @@ fun Application.mainWithDependencies() {
     }
 
     routing {
-        blablacar(BlablacarApi())
-        tripDetails(TripRequestsService())
+        blablacar(BlablacarApi(), kratosService)
+        tripDetails(TripRequestsService(), kratosService)
     }
 }

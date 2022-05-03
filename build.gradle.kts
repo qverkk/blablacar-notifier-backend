@@ -25,6 +25,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-server-double-receive:$ktor_version")
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-serialization:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-id-serialization:$kmongo_version")
