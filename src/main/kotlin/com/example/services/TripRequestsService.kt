@@ -25,7 +25,9 @@ class TripRequestsService {
             )
 
             if (existingTripRequest.first() == null) {
-                col.insertOne(newTrip)
+                col.insertOne(newTrip.apply {
+                    this.endDate = this.endDate ?: startDate
+                })
             }
         }
     }

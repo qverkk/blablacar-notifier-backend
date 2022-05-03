@@ -19,5 +19,5 @@ data class TripRequest(
     @Contextual
     val startDate: LocalDate,
     @Contextual
-    val endDate: LocalDate? = startDate
+    var endDate: LocalDate?
 )
