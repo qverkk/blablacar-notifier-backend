@@ -8,6 +8,7 @@ import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class KratosService {
     private val kratosUrl = "http://192.168.0.199:4433"
@@ -31,7 +32,7 @@ class KratosService {
         val decoded = json.decodeFromString<JsonObject>(result.bodyAsText())
         val identity = decoded["identity"] as JsonObject
         return AuthorizedUser(
-            identity["id"].toString()
+            identity["id"]!!.jsonPrimitive.content
         )
     }
 }

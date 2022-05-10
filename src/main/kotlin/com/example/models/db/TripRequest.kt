@@ -13,7 +13,7 @@ data class TripRequest(
     @SerialName("_id")
     @Contextual
     @BsonId
-    val id: Id<TripRequest> = newId(),
+    val id: Id<TripRequest>? = newId(),
     val fromCity: String,
     val toCity: String,
     @Contextual
