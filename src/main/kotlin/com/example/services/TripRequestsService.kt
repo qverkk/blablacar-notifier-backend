@@ -7,6 +7,7 @@ import org.litote.kmongo.coroutine.CoroutineFindPublisher
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
+import org.litote.kmongo.toId
 
 class TripRequestsService {
     private val client = KMongo.createClient("mongodb://qverkk:qverkkpassword@localhost:27017").coroutine
@@ -34,5 +35,9 @@ class TripRequestsService {
 
     fun getAllTripRequests(userId: String): CoroutineFindPublisher<TripRequest> {
         return col.find(TripRequest::userId eq userId)
+    }
+
+    suspend fun deleteTripDetails(id: String, userId: String) {
+        col.deleteOne(TripRequest::id eq id.toId(), TripRequest::userId eq userId)
     }
 }
