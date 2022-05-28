@@ -28,6 +28,14 @@ fun Route.tripsFound(service: TripFoundService, kratosService: KratosService) {
             service.notifyAgain(tripFoundId, authenticatedUser.id)
             call.respond(HttpStatusCode.OK)
         }
+        get("{tripRequestId}/count") {
+            val session = call.request.headers[kratosSessionHeaderName]!!
+            val tripRequestId = call.parameters.getOrFail("tripRequestId")
+            val authenticatedUser = kratosService.authenticateUser(session)
+
+            val result = service.countForTripRequestId(tripRequestId, authenticatedUser.id)
+            call.respond(result.toList().count())
+        }
     }
 }
 

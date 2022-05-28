@@ -13,6 +13,7 @@ data class TripFound(
     @Contextual
     @BsonId
     val id: Id<TripFound> = newId(),
+    val tripRequestId: String,
     val blablacarTripId: String,
     val blablacarSource: String,
     var notified: Boolean,

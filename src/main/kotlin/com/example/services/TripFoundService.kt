@@ -4,6 +4,7 @@ import com.example.models.db.TripFound
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.coroutine.CoroutineFindPublisher
 import org.litote.kmongo.eq
 
 class TripFoundService(
@@ -45,5 +46,9 @@ class TripFoundService(
         trips.forEach {
             col.updateOne(TripFound::id eq it.id, it)
         }
+    }
+
+    fun countForTripRequestId(tripRequestId: String, userId: String): CoroutineFindPublisher<TripFound> {
+        return col.find("{tripRequestId: '$tripRequestId', userId: '$userId'}")
     }
 }
