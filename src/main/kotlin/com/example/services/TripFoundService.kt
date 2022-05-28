@@ -5,7 +5,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
-import org.litote.kmongo.setValue
 
 class TripFoundService(
     database: CoroutineDatabase
@@ -39,7 +38,7 @@ class TripFoundService(
     }
 
     suspend fun notifyAgain(tripFoundId: String, userId: String) {
-        col.updateOne("{_id:ObjectId('$tripFoundId'), userId: '$userId'}", setValue(TripFound::notifyFreeSeats, true))
+        col.updateOne("{_id:ObjectId('$tripFoundId'), userId: '$userId'}", "{\$set:{notifyFreeSeats:true}}")
     }
 
     suspend fun updateTrips(trips: List<TripFound>) {

@@ -2,6 +2,7 @@ package com.example.routing
 
 import com.example.services.KratosService
 import com.example.services.TripFoundService
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -19,12 +20,13 @@ fun Route.tripsFound(service: TripFoundService, kratosService: KratosService) {
             val allTripRequests = service.getAllUsersTripsFound(authenticatedUser.id)
             call.respond(allTripRequests.toList())
         }
-        patch("/trips-found/{id}/notify") {
+        patch("{id}/notify") {
             val session = call.request.headers[kratosSessionHeaderName]!!
             val tripFoundId = call.parameters.getOrFail("id")
             val authenticatedUser = kratosService.authenticateUser(session)
 
             service.notifyAgain(tripFoundId, authenticatedUser.id)
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
