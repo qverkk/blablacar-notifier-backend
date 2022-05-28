@@ -3,14 +3,13 @@ package com.example.services
 import com.example.models.db.TripRequest
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.CoroutineFindPublisher
-import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
-import org.litote.kmongo.reactivestreams.KMongo
 
-class TripRequestsService {
-    private val client = KMongo.createClient("mongodb://qverkk:qverkkpassword@localhost:27017").coroutine
-    private val database = client.getDatabase("blablacar")
+class TripRequestsService(
+    database: CoroutineDatabase
+) {
     private val col = database.getCollection<TripRequest>()
 
     suspend fun addTripRequestAsync(
@@ -32,8 +31,12 @@ class TripRequestsService {
         }
     }
 
-    fun getAllTripRequests(userId: String): CoroutineFindPublisher<TripRequest> {
+    fun getUserTripRequests(userId: String): CoroutineFindPublisher<TripRequest> {
         return col.find(TripRequest::userId eq userId)
+    }
+
+    fun getTripRequests(): CoroutineFindPublisher<TripRequest> {
+        return col.find()
     }
 
     suspend fun deleteTripDetails(id: String, userId: String) {

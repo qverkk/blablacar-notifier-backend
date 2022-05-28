@@ -1,11 +1,15 @@
 package com.example
 
 import com.example.config.firebase.FirebaseAdmin
+import com.example.notification.firebase.FirebaseNotification
 import com.example.requests.BlablacarApi
 import com.example.routing.blablacar
 import com.example.routing.tripDetails
+import com.example.routing.tripsFound
+import com.example.scheduler.TripScanScheduler
 import com.example.serializers.LocalDateSerializer
 import com.example.services.KratosService
+import com.example.services.TripFoundService
 import com.example.services.TripRequestsService
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -19,14 +23,22 @@ import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.id.serialization.IdKotlinXSerializationModule
+import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.serialization.registerSerializer
 import org.slf4j.event.Level
+
+
+private val client = KMongo.createClient("mongodb://qverkk:qverkkpassword@localhost:27017").coroutine
+private val database = client.getDatabase("blablacar")
+private lateinit var tripScanScheduler: TripScanScheduler
 
 fun main() {
     embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
         mainWithDependencies()
     }.start(wait = true)
+        .addShutdownHook { tripScanScheduler.cancel() }
 }
 
 fun Application.mainWithDependencies() {
@@ -52,8 +64,15 @@ fun Application.mainWithDependencies() {
         })
     }
 
+    val tripRequestsService = TripRequestsService(database)
+    val tripFoundService = TripFoundService(database)
+    val blablacarApi = BlablacarApi()
+    tripScanScheduler = TripScanScheduler(tripRequestsService, tripFoundService, blablacarApi, FirebaseNotification())
+    tripScanScheduler.schedule()
+
     routing {
-        blablacar(BlablacarApi(), kratosService)
-        tripDetails(TripRequestsService(), kratosService)
+        blablacar(blablacarApi, kratosService)
+        tripDetails(tripRequestsService, kratosService)
+        tripsFound(tripFoundService, kratosService)
     }
 }

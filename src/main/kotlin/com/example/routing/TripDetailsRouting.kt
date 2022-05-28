@@ -27,7 +27,7 @@ fun Route.tripDetails(service: TripRequestsService, kratosService: KratosService
             val session = call.request.headers[kratosSessionHeaderName]!!
             val authenticatedUser = kratosService.authenticateUser(session)
 
-            val allTripRequests = service.getAllTripRequests(authenticatedUser.id)
+            val allTripRequests = service.getUserTripRequests(authenticatedUser.id)
             call.respond(allTripRequests.toList())
         }
         delete("{id}") {

@@ -20,5 +20,6 @@ data class TripRequest(
     val startDate: LocalDate,
     @Contextual
     var endDate: LocalDate? = null,
-    var userId: String? = null
+    var userId: String? = null,
+    val userRegistrationToken: String
 )

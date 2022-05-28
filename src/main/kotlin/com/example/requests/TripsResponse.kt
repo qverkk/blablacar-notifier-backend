@@ -43,7 +43,23 @@ data class ModalId(
 data class Driver(
     val thumbnail: String,
     @SerialName("display_name")
-    val displayName: String
+    val displayName: String,
+    val rating: DriverRating,
+    @SerialName("verification_status")
+    val verificationStatus: DriverVerificationStatus
+)
+
+@Serializable
+data class DriverVerificationStatus(
+    val label: String? = null,
+    val code: String
+)
+
+@Serializable
+data class DriverRating(
+    val overall: Double,
+    @SerialName("total_number")
+    val totalNumber: Int
 )
 
 @Serializable

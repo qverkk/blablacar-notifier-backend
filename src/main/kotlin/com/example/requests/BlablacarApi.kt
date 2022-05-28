@@ -29,6 +29,40 @@ class BlablacarApi {
         isLenient = true
     }
 
+    suspend fun getRideSeats(
+        tripId: String,
+        tripSource: String
+    ): Either<HttpStatusCode, RideResponse> {
+        val response = retryOnceOnError {
+            client.get("$BLABLACAR_API_URL/ride") {
+                parameter("id", tripId)
+                parameter("source", tripSource)
+                parameter("requested_seats", 1)
+                headers {
+                    requiredBasicBlablacarHeaders()
+                }
+            }
+        }
+
+        return response.map { json.decodeFromString(it.bodyAsText()) }
+    }
+
+    suspend fun getCarpools(
+        fromCity: String,
+        toCity: String,
+        date: LocalDate
+    ): TripsResponse? {
+        return getCarpools(
+            getLocationPositionById(
+                getLocationId(fromCity).orNull() ?: return null
+            ).orNull() ?: return null,
+            getLocationPositionById(
+                getLocationId(toCity).orNull() ?: return null
+            ).orNull() ?: return null,
+            date
+        ).orNull()
+    }
+
     suspend fun getCarpools(
         fromCityLocation: CityLocation,
         toCityLocation: CityLocation,
