@@ -5,10 +5,14 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+
+private val kratosSessionHeaderName = "kratos-session"
 
 class KratosService {
     private val kratosUrl = "http://192.168.0.199:4433"
@@ -18,7 +22,7 @@ class KratosService {
         isLenient = true
     }
 
-    suspend fun authenticateUser(sessionToken: String): AuthorizedUser {
+    suspend fun authenticateUser(sessionToken: String): AuthorizedUser? {
         val result = client.get("$kratosUrl/sessions/whoami") {
             headers {
                 header(HttpHeaders.Accept, "application/json")
@@ -27,13 +31,25 @@ class KratosService {
         }
 
         if (result.status != HttpStatusCode.OK) {
-            throw RuntimeException()
+            return null
         }
         val decoded = json.decodeFromString<JsonObject>(result.bodyAsText())
         val identity = decoded["identity"] as JsonObject
         return AuthorizedUser(
             identity["id"]!!.jsonPrimitive.content
         )
+    }
+}
+
+suspend fun ApplicationCall.getAuthenticatedUser(kratosService: KratosService): AuthorizedUser {
+    val session = this.request.headers[kratosSessionHeaderName]!!
+    return when (val authenticateUser = kratosService.authenticateUser(session)) {
+        null -> {
+            this.respond(HttpStatusCode.Unauthorized)
+            throw RuntimeException()
+        }
+
+        else -> authenticateUser
     }
 }
 
