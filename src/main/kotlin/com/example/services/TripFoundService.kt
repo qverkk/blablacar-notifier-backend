@@ -46,6 +46,14 @@ class TripFoundService(
         }
     }
 
+    suspend fun notifyAllAgain(requestTripId: String, userId: String) {
+        val foundTrips = col.find("{tripRequestId:'$requestTripId', userId: '$userId'}")
+        foundTrips.toList().forEach {
+            it.notifyFreeSeats = true
+            col.updateOne(TripFound::id eq it.id, it)
+        }
+    }
+
     suspend fun updateTrips(trips: List<TripFound>) {
         trips.forEach {
             col.updateOne(TripFound::id eq it.id, it)

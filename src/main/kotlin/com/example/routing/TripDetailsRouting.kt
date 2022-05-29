@@ -54,5 +54,12 @@ fun Route.tripDetails(
             val result = tripFoundService.findTripsForUser(tripRequestId, authenticatedUser.id)
             call.respond(result.toList())
         }
+        patch("{id}/found-trips/notify") {
+            val tripRequestId = call.parameters.getOrFail("id")
+            val authenticatedUser = call.getAuthenticatedUser(kratosService)
+
+            tripFoundService.notifyAllAgain(tripRequestId, authenticatedUser.id)
+            call.respond(HttpStatusCode.OK)
+        }
     }
 }
