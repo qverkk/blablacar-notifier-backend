@@ -8,7 +8,6 @@ import com.example.services.TripRequestsService
 import kotlinx.coroutines.*
 import kotlinx.datetime.toJavaLocalDate
 import org.litote.kmongo.newId
-import org.litote.kmongo.util.idValue
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.seconds
 
@@ -84,7 +83,7 @@ class TripScanScheduler(
     }
 
     private suspend fun findNewTrips() {
-        tripRequestsService.getTripRequests().toList().forEach { request ->
+        tripRequestsService.getActiveTripRequests().toList().forEach { request ->
             blablacarApi.getCarpools(
                 request.fromCity,
                 request.toCity,
@@ -95,7 +94,7 @@ class TripScanScheduler(
                     tripFoundService.addTripFound(
                         TripFound(
                             newId(),
-                            request.idValue as String,
+                            request.id!!.toString(),
                             it.modalId.id,
                             it.modalId.source,
                             notified = false,

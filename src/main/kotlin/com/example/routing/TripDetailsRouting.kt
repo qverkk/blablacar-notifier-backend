@@ -2,6 +2,7 @@ package com.example.routing
 
 import com.example.models.db.TripRequest
 import com.example.services.KratosService
+import com.example.services.TripFoundService
 import com.example.services.TripRequestsService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -12,7 +13,11 @@ import io.ktor.server.util.*
 
 private val kratosSessionHeaderName = "kratos-session"
 
-fun Route.tripDetails(service: TripRequestsService, kratosService: KratosService) {
+fun Route.tripDetails(
+    tripFoundService: TripFoundService,
+    tripRequestsService: TripRequestsService,
+    kratosService: KratosService
+) {
     route("/trip-details") {
         post {
             val newTrip = call.receive<TripRequest>()
@@ -20,14 +25,14 @@ fun Route.tripDetails(service: TripRequestsService, kratosService: KratosService
             val authenticatedUser = kratosService.authenticateUser(session)
 
             newTrip.userId = authenticatedUser.id
-            service.addTripRequestAsync(newTrip)
+            tripRequestsService.addTripRequestAsync(newTrip)
             call.respond(HttpStatusCode.Created)
         }
         get {
             val session = call.request.headers[kratosSessionHeaderName]!!
             val authenticatedUser = kratosService.authenticateUser(session)
 
-            val allTripRequests = service.getUserTripRequests(authenticatedUser.id)
+            val allTripRequests = tripRequestsService.getUserTripRequests(authenticatedUser.id)
             call.respond(allTripRequests.toList())
         }
         delete("{id}") {
@@ -35,8 +40,16 @@ fun Route.tripDetails(service: TripRequestsService, kratosService: KratosService
             val session = call.request.headers[kratosSessionHeaderName]!!
             val authenticatedUser = kratosService.authenticateUser(session)
 
-            service.deleteTripDetails(id, authenticatedUser.id)
+            tripRequestsService.deleteTripDetails(id, authenticatedUser.id)
             call.respond(HttpStatusCode.OK)
+        }
+        get("{id}/found-trips/count") {
+            val session = call.request.headers[kratosSessionHeaderName]!!
+            val tripRequestId = call.parameters.getOrFail("id")
+            val authenticatedUser = kratosService.authenticateUser(session)
+
+            val result = tripFoundService.countForTripRequestId(tripRequestId, authenticatedUser.id)
+            call.respond(result.toList().count())
         }
     }
 }

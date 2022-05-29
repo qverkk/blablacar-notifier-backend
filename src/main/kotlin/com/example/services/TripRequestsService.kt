@@ -3,9 +3,12 @@ package com.example.services
 import com.example.models.db.TripRequest
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.datetime.toKotlinLocalDate
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.CoroutineFindPublisher
 import org.litote.kmongo.eq
+import org.litote.kmongo.gte
+import java.time.LocalDate
 
 class TripRequestsService(
     database: CoroutineDatabase
@@ -35,8 +38,8 @@ class TripRequestsService(
         return col.find(TripRequest::userId eq userId)
     }
 
-    fun getTripRequests(): CoroutineFindPublisher<TripRequest> {
-        return col.find()
+    fun getActiveTripRequests(): CoroutineFindPublisher<TripRequest> {
+        return col.find(TripRequest::startDate gte LocalDate.now().toKotlinLocalDate())
     }
 
     suspend fun deleteTripDetails(id: String, userId: String) {

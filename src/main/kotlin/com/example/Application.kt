@@ -72,7 +72,7 @@ fun Application.mainWithDependencies() {
 
     routing {
         blablacar(blablacarApi, kratosService)
-        tripDetails(tripRequestsService, kratosService)
+        tripDetails(tripFoundService, tripRequestsService, kratosService)
         tripsFound(tripFoundService, kratosService)
     }
 }
