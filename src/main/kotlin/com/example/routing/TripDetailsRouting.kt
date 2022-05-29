@@ -48,8 +48,16 @@ fun Route.tripDetails(
             val tripRequestId = call.parameters.getOrFail("id")
             val authenticatedUser = kratosService.authenticateUser(session)
 
-            val result = tripFoundService.countForTripRequestId(tripRequestId, authenticatedUser.id)
+            val result = tripFoundService.findTripsForUser(tripRequestId, authenticatedUser.id)
             call.respond(result.toList().count())
+        }
+        get("{id}/found-trips") {
+            val session = call.request.headers[kratosSessionHeaderName]!!
+            val tripRequestId = call.parameters.getOrFail("id")
+            val authenticatedUser = kratosService.authenticateUser(session)
+
+            val result = tripFoundService.findTripsForUser(tripRequestId, authenticatedUser.id)
+            call.respond(result.toList())
         }
     }
 }

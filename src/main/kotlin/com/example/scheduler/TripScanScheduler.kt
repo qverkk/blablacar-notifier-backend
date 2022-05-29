@@ -90,7 +90,6 @@ class TripScanScheduler(
                 request.startDate.toJavaLocalDate()
             )?.trips?.forEach {
                 if (!tripFoundService.exists(it.modalId.id, request.userRegistrationToken)) {
-                    println("Found new trip...")
                     tripFoundService.addTripFound(
                         TripFound(
                             newId(),
@@ -108,7 +107,9 @@ class TripScanScheduler(
                             it.driver.displayName,
                             it.driver.rating.totalNumber,
                             it.driver.verificationStatus.code,
-                            it.driver.verificationStatus.label
+                            it.driver.verificationStatus.label,
+                            it.waypoints[0].departureTime,
+                            it.waypoints[1].departureTime
                         )
                     )
                 }

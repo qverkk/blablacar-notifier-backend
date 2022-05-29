@@ -39,7 +39,11 @@ class TripFoundService(
     }
 
     suspend fun notifyAgain(tripFoundId: String, userId: String) {
-        col.updateOne("{_id:ObjectId('$tripFoundId'), userId: '$userId'}", "{\$set:{notifyFreeSeats:true}}")
+        col.findOne("{_id:ObjectId('$tripFoundId'), userId: '$userId'}")?.apply {
+            this.notifyFreeSeats = true
+        }?.let {
+            col.updateOne("{_id:ObjectId('$tripFoundId'), userId: '$userId'}", it)
+        }
     }
 
     suspend fun updateTrips(trips: List<TripFound>) {
@@ -48,7 +52,7 @@ class TripFoundService(
         }
     }
 
-    fun countForTripRequestId(tripRequestId: String, userId: String): CoroutineFindPublisher<TripFound> {
+    fun findTripsForUser(tripRequestId: String, userId: String): CoroutineFindPublisher<TripFound> {
         return col.find("{tripRequestId: '$tripRequestId', userId: '$userId'}")
     }
 }

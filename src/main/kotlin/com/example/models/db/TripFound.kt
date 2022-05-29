@@ -27,5 +27,7 @@ data class TripFound(
     val driverDisplayName: String,
     val driverRatingsCount: Int,
     val driverStatusCode: String,
-    val driverStatusLabel: String?
+    val driverStatusLabel: String?,
+    val fromCityDepartureTime: String,
+    val toCityDepartureTime: String
 )

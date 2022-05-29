@@ -37,9 +37,10 @@ class BlablacarApi {
             client.get("$BLABLACAR_API_URL/ride") {
                 parameter("id", tripId)
                 parameter("source", tripSource)
-                parameter("requested_seats", 1)
+                parameter("requested_seats", "1")
                 headers {
-                    requiredBasicBlablacarHeaders()
+                    requiredBasicBlablacarHeaders(apiVersionId = "5")
+                    header(HttpHeaders.Cookie, "datadome=$BLABLACAR_DATADOME")
                 }
             }
         }
@@ -160,7 +161,7 @@ class BlablacarApi {
         }
     }
 
-    private fun HttpRequestBuilder.requiredBasicBlablacarHeaders() {
+    private fun HttpRequestBuilder.requiredBasicBlablacarHeaders(apiVersionId: String = "6") {
         header(HttpHeaders.AcceptEncoding, "gzip, deflate, br")
         header(HttpHeaders.UserAgent, "Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0")
         header(HttpHeaders.Authorization, "Bearer $BLABLACAR_BEARER_TOKEN_VALUE")
@@ -168,6 +169,6 @@ class BlablacarApi {
         header("x-visitor-id", "${UUID.randomUUID()}")
         header("x-currency", "PLN")
         header("x-client", "SPA|1.0.0")
-        header("X-Blablacar-Accept-Endpoint-Version", "6")
+        header("X-Blablacar-Accept-Endpoint-Version", apiVersionId)
     }
 }
