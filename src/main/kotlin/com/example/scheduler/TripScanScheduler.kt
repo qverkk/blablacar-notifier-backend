@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import kotlinx.datetime.toJavaLocalDate
 import org.litote.kmongo.newId
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class TripScanScheduler(
@@ -27,12 +28,13 @@ class TripScanScheduler(
     }
 
     fun schedule() = launch {
+        delay(10.seconds)
         while (true) {
             println("Scanning...")
-            delay(10.seconds)
             findNewTrips()
             notifyAboutFoundRequests()
             notifyAboutAvailableSeats()
+            delay(1.minutes)
         }
     }
 
@@ -57,9 +59,7 @@ class TripScanScheduler(
             .eachCount()
             .forEach {
                 notifier.send(
-                    mapOf(
-                        "numberOfNewTrips" to it.value.toString()
-                    ),
+                    mapOf("numberOfNewTrips" to it.value.toString()),
                     it.key
                 )
             }
@@ -74,9 +74,7 @@ class TripScanScheduler(
 
         notNotifiedTrips.groupingBy { it.userRegisteredToken }.eachCount().forEach {
             notifier.send(
-                mapOf(
-                    "numberOfNewTrips" to it.value.toString()
-                ),
+                mapOf("numberOfNewTrips" to it.value.toString()),
                 it.key
             )
         }
@@ -85,10 +83,10 @@ class TripScanScheduler(
     private suspend fun findNewTrips() {
         tripRequestsService.getActiveTripRequests().toList().forEach { request ->
             blablacarApi.getCarpools(
-                request.fromCity,
-                request.toCity,
+                request.fromCityLocationDetails!!,
+                request.toCityLocationDetails!!,
                 request.startDate.toJavaLocalDate()
-            )?.trips?.forEach {
+            ).orNull()?.trips?.forEach {
                 if (!tripFoundService.exists(it.modalId.id, request.userRegistrationToken)) {
                     tripFoundService.addTripFound(
                         TripFound(

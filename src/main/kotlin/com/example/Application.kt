@@ -3,12 +3,12 @@ package com.example
 import com.example.config.firebase.FirebaseAdmin
 import com.example.notification.firebase.FirebaseNotification
 import com.example.requests.BlablacarApi
-import com.example.routing.blablacar
 import com.example.routing.tripDetails
 import com.example.routing.tripsFound
 import com.example.scheduler.TripScanScheduler
 import com.example.serializers.LocalDateSerializer
 import com.example.services.KratosService
+import com.example.services.LocationsService
 import com.example.services.TripFoundService
 import com.example.services.TripRequestsService
 import io.ktor.serialization.kotlinx.json.*
@@ -30,7 +30,7 @@ import org.litote.kmongo.serialization.registerSerializer
 import org.slf4j.event.Level
 
 
-private val client = KMongo.createClient("mongodb://qverkk:qverkkpassword@localhost:27017").coroutine
+private val client = KMongo.createClient("mongodb://mongo:mongopassword@localhost:27017").coroutine
 private val database = client.getDatabase("blablacar")
 private lateinit var tripScanScheduler: TripScanScheduler
 
@@ -64,14 +64,14 @@ fun Application.mainWithDependencies() {
         })
     }
 
-    val tripRequestsService = TripRequestsService(database)
-    val tripFoundService = TripFoundService(database)
     val blablacarApi = BlablacarApi()
+    val locationService = LocationsService(blablacarApi, database)
+    val tripRequestsService = TripRequestsService(database, locationService)
+    val tripFoundService = TripFoundService(database)
     tripScanScheduler = TripScanScheduler(tripRequestsService, tripFoundService, blablacarApi, FirebaseNotification())
     tripScanScheduler.schedule()
 
     routing {
-        blablacar(blablacarApi, kratosService)
         tripDetails(tripFoundService, tripRequestsService, kratosService)
         tripsFound(tripFoundService, kratosService)
     }

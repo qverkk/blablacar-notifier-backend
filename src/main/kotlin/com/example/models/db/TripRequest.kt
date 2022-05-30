@@ -15,7 +15,9 @@ data class TripRequest(
     @BsonId
     val id: Id<TripRequest>? = newId(),
     val fromCity: String,
+    var fromCityLocationDetails: LocationDetails? = null,
     val toCity: String,
+    var toCityLocationDetails: LocationDetails? = null,
     @Contextual
     val startDate: LocalDate,
     @Contextual

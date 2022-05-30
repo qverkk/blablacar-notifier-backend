@@ -2,6 +2,7 @@ package com.example.requests
 
 import arrow.core.Either
 import com.example.models.CityLocation
+import com.example.models.db.LocationDetails
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.cookies.*
@@ -49,30 +50,14 @@ class BlablacarApi {
     }
 
     suspend fun getCarpools(
-        fromCity: String,
-        toCity: String,
-        date: LocalDate
-    ): TripsResponse? {
-        return getCarpools(
-            getLocationPositionById(
-                getLocationId(fromCity).orNull() ?: return null
-            ).orNull() ?: return null,
-            getLocationPositionById(
-                getLocationId(toCity).orNull() ?: return null
-            ).orNull() ?: return null,
-            date
-        ).orNull()
-    }
-
-    suspend fun getCarpools(
-        fromCityLocation: CityLocation,
-        toCityLocation: CityLocation,
+        fromCityLocationDetails: LocationDetails,
+        toCityLocationDetails: LocationDetails,
         date: LocalDate?
     ): Either<HttpStatusCode, TripsResponse> {
         val response = retryOnceOnError {
             client.get("$BLABLACAR_API_URL/trip/search") {
-                parameter("from_coordinates", "${fromCityLocation.latitude},${fromCityLocation.longitude}")
-                parameter("to_coordinates", "${toCityLocation.latitude},${toCityLocation.longitude}")
+                parameter("from_coordinates", "${fromCityLocationDetails.cityLatitude},${fromCityLocationDetails.cityLongitude}")
+                parameter("to_coordinates", "${toCityLocationDetails.cityLatitude},${toCityLocationDetails.cityLongitude}")
                 date?.let {
                     parameter("departure_date", it.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 }
