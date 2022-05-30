@@ -18,7 +18,16 @@ data class Waypoint(
     @SerialName("main_text")
     val city: String,
     @SerialName("departure_datetime")
-    val departureTime: String
+    val departureTime: String,
+    @SerialName("extra_distance")
+    val extraDistance: ExtraDistance
+)
+
+@Serializable
+data class ExtraDistance(
+    val proximity: String,
+    @SerialName("distance_value")
+    val distanceValue: Int,
 )
 
 @Serializable

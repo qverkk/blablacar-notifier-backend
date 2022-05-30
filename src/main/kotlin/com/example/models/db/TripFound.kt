@@ -29,5 +29,9 @@ data class TripFound(
     val driverStatusCode: String,
     val driverStatusLabel: String?,
     val fromCityDepartureTime: String,
-    val toCityDepartureTime: String
+    val toCityDepartureTime: String,
+    val fromCityDistance: Int,
+    val fromCityProximity: String,
+    val toCityDistance: Int,
+    val toCityProximity: String
 )

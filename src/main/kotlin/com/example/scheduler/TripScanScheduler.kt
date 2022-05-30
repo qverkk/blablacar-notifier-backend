@@ -34,7 +34,7 @@ class TripScanScheduler(
             findNewTrips()
             notifyAboutFoundRequests()
             notifyAboutAvailableSeats()
-            delay(1.minutes)
+            delay(20.minutes)
         }
     }
 
@@ -107,7 +107,11 @@ class TripScanScheduler(
                             it.driver.verificationStatus.code,
                             it.driver.verificationStatus.label,
                             it.waypoints[0].departureTime,
-                            it.waypoints[1].departureTime
+                            it.waypoints[1].departureTime,
+                            it.waypoints[0].extraDistance.distanceValue,
+                            it.waypoints[0].extraDistance.proximity,
+                            it.waypoints[1].extraDistance.distanceValue,
+                            it.waypoints[1].extraDistance.proximity
                         )
                     )
                 }
